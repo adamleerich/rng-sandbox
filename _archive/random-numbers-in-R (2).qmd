@@ -1,0 +1,71 @@
+---
+title: "Random numbers in R: the Mersenne Twister"
+author: "adamleerich"
+date: "2024-04-22"
+code-line-numbers: false
+keep-md: false
+knitr: 
+  opts_chunk: 
+    collapse: true
+execute:
+  echo: true
+  cache: true
+  warning: false
+  error: false
+format: html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library <- function(...) {
+  suppressPackageStartupMessages(
+    suppressWarnings(
+      base::library(...)))}
+
+library(tidyverse)
+```
+
+
+
+## Getting a random uniform variable in R
+
+What happens in the depths of R's code when you run these statements?
+
+```{r}
+set.seed(2538)
+runif(5, min = 0, max = 10)
+```
+
+You don't have to run `set.seed` to get random numbers, but you get repeatable
+random numbers when you do.  The function actually has four arguments, with
+the following defaults for arguments two through four:
+
+```{r}
+set.seed(
+  seed = 2538, 
+  kind = "Mersenne-Twister", 
+  normal.kind = "Inversion", 
+  sample.kind = "Rejection")
+```
+
+These specify the pseudo-random algorithms R is using to transform the given seed
+into a stream of random-looking bits.
+
+The function `set.seed` has a lot of argument checking code, but stripping all that away,
+it is just a wrapper for an internal function written in C.
+
+```r
+base::set.seed <- function(seed, kind = NULL, normal.kind = NULL, sample.kind = NULL) {
+  # Input checking and prep
+  .Internal(set.seed(seed, i.knd, normal.kind, sample.kind))
+}
+```
+
+## `set.seed`
+
+
+
+
+https://github.com/adamleerich/r-source-3efd684/blob/302209f/src/library/stats/src/random.c#L225
+
